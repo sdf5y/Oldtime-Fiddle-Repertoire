@@ -1,4 +1,4 @@
-setwd("C:/Users/18045/Documents/R/fiddle")# Sean's WD
+setwd("C:/Users/18045/Documents/Python/fiddletune")  #R/fiddle
 #install.packages("xtable", "dplyr",  "readxl", "gridExtra","xtable", "readr", "car", "maps", "mapdata", "usmap", "sf", "tigris")
 library(readr)
 library(ggplot2)
@@ -17,7 +17,14 @@ library(tigris)
 #LoadData----
 
 fiddle_ink <- read_excel("Collection of Fiddle Tunes.xlsx")
-artist_df <- read_csv("Artist Location.csv")
+fiddle_ink <- fiddle_ink[,-7]
+
+#artist_df <- read_csv("Artist Location.csv")
+
+large_df <- read_csv("test.csv")
+
+artist_df <- read.csv("artistlocation.csv")
+artist_df <- artist_df[,-1]
 
 #Tally by Key ----
 
@@ -75,7 +82,7 @@ big_tab %>%
                                                         "GDAD",
                                                         "AEAD",
                                                         "AEF#C#",
-                                                        "EADE")))%>%
+                                                        "EDAE")))%>%
 ggplot(aes(x = `Tuning Notes`,
            y = `Count`,
            fill = `Key`,
@@ -96,7 +103,7 @@ big_key %>%
   mutate(`Tuning Notes` = factor(`Tuning Notes`, levels = c("GDAE",
                                                             "AEAE",
                                                             "ADAE",
-                                                            "EADE")))%>%
+                                                            "EDAE")))%>%
   ggplot(aes(x = `Tuning Notes`,
              y = `Count`,
              fill = `Other`,
@@ -112,19 +119,20 @@ big_key %>%
 
 #plot of crooked tunes 
 
-fiddle_copy$`Cooked [-/+]`
+fiddle_copy$`Crooked [-/+]`
 
 fiddle_ink %>%
   arrange(`Tuning Notes`) %>%
-  filter(!is.na(`Cooked [-/+]`)) %>%
-  count(`Tuning Notes`, `Cooked [-/+]`) %>%
+  filter(!is.na(`Crooked [-/+]`)) %>%
+  count(`Tuning Notes`, `Crooked [-/+]`) %>%
   mutate(`Tuning Notes` = factor(`Tuning Notes`, levels = c("GDAE",
                                                             "AEAE",
-                                                            "ADAE")))%>%
+                                                            "ADAE",
+                                                            'AEF#C#')))%>%
   ggplot(aes(x = `Tuning Notes`,
              y = `n`,
-             fill = `Cooked [-/+]`,
-             color = `Cooked [-/+]`))+
+             fill = `Crooked [-/+]`,
+             color = `Crooked [-/+]`))+
   geom_histogram(stat = "identity")+
   labs(title = "Crooked Fiddle Tunes by Tuning",
        y = "Count",
@@ -157,10 +165,10 @@ colnames(source_df) <- c("Name", "Key", "Count")
 source_2_df <- source_2_df %>%
   arrange(-`Count`)
 
-#write.csv(source_2_df, file = "C:/Users/18045/Documents/R/fiddle/artistlocation.csv")
+#write.csv(source_2_df, file = "C:/Users/18045/Documents/Python/fiddletune/artistlocation0.csv")
 
-#xtable(source_2_df)
-#xtable(artist_df[2:5], digits = 0)
+xtable(source_2_df)
+xtable(artist_df[2:5], digits = 0)
 
 #Maps ----
 
@@ -170,42 +178,19 @@ states <- map_data("state")
 
 counties <- map_data('county')
 
-states$region <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    # Uppercase with Base R
+states$region <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    
      states$region,
      perl = TRUE)
 
-counties$region <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    # Uppercase with Base R
+counties$region <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    
                       counties$region,
                       perl = TRUE)
 
-counties$subregion <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    # Uppercase with Base R
+counties$subregion <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",    
                         counties$subregion,
                         perl = TRUE)
 
-#Convert state acronym to full name----
-i <- 0
-df <- data.frame()
-matching_state <- data.frame()
-for (i in seq_along(artist_df$State)) {
-  
-  cell <- artist_df$State[i]
-  matching_state <- state.name[grep(cell, state.abb)]  # Find matching state abbreviation(s)
-  
-  if (length(matching_state) > 0) {
-    df <- c(df, matching_state)
-  } 
-}
-
-df <- as.data.frame(df)
-df <- t(df)
-df <- data.frame(df)
-
-colnames(df) <- c("Region")
-
-#remove non-USA artists from the artist dataframe
 artist_df <- subset(artist_df, `State` != "NA")
-
-df <- subset(df, `Region` != "NA")
 
 #identify unique states, and merge dataframes----
 
@@ -229,22 +214,11 @@ matched_data <- matched_data %>%
 
 matched_data <- subset(matched_data, is.na(matched_data$Name)!=T)
 
-#Erroneous row ----
-replacememt_row <- subset(centroids, COUNTYFP == '067' & STATEFP.x == "51") 
-
-matched_data[matched_data$Name == "N.H. Mills", colnames(centroids)] <- replacememt_row[colnames(centroids)]
-
-#Extract Lat and Long
-matched_data <- matched_data %>%
-  mutate(coordinates = st_coordinates(geometry)) %>%
-  mutate(Latitude = coordinates[, "Y"],
-         Longitude = coordinates[, "X"])
-
 new_df <- matched_data %>%
   st_set_geometry(NULL) %>% 
-  select(NAME.x, NAME.y, Rank, Name, Count, Latitude, Longitude) 
+  select(NAME.x, NAME.y, Rank, Name, Count, LAT_jittered, LONG_jittered)
 
-colnames(new_df) <- c("County", "State", "Rank", "Name", "Count", "Lat", "Long")
+colnames(new_df) <- c("County", "State", "Rank", "Name", "Count", "Latitude", "Longitude")
 
 #Final Plots prepwork----
 
@@ -260,17 +234,16 @@ filtered_counties <- counties %>%
   filter(region %in% list_states_df)
 
 count_colors <- c("blue", "green", "red", "purple", "orange")
-new_df$Count_Bin <- cut(new_df$Count, breaks = c(0, 1, 5, 10, 14, Inf), 
-                        labels = c("1", "2-5", "6-10", "11-14", "15+"), 
+new_df$Count_Bin <- cut(new_df$Count, breaks = c(0, 3, 8, 12, 18, Inf), #c(0, 1, 5, 10, 14, Inf)
+                        labels = c("1-3", "4-8", "9-12", "13-18", "19+"), #c("1", "2-5", "6-10", "11-14", "15+")
                         include.lowest = TRUE)
 
-#Histogram of counts and states-----
+#Histogram of Tune Counts and States-----
 
 sum_counts_per_state <- new_df %>%
   group_by(State) %>%
   summarise(Total_Count = sum(Count))
 
-# Create a bar plot
 ggplot(sum_counts_per_state, 
        aes(x = reorder(State, -Total_Count), 
            y = Total_Count)) +
@@ -287,11 +260,81 @@ ggplot(sum_counts_per_state,
                                    margin = margin(r=0), 
                                    hjust = 1))
 
+#Histogram of Key Counts and States-----
+
+i <- 0
+large_df$Other <- NA
+for (i in 1:length(large_df$Key)) {
+  row <- large_df$Key[i]
+  
+  if (grepl("/|;", large_df$Key[i]) == TRUE) {
+    large_df$Key[i] <- substr(row, 1, 1)
+  }
+  else if (grepl("modal", large_df$`Key`[i])) {
+    large_df$Other[i] <- "Modal"
+    large_df$Key[i] <- substr(row, 1, 1)
+  }
+  else if (grepl("minor", large_df$`Key`[i])) {
+    large_df$Other[i] <- "Minor"
+    large_df$Key[i] <- substr(row, 1, 1)
+  }
+  else if (grepl(" ", large_df$`Key`[i])) {
+    large_df$Key[i] <- substr(row, 1, 1)
+  }
+}
+
+big_key_3 <- large_df %>%
+  group_by(`Tuning Notes`) %>%
+  count(Key, Other)
+
+test  <- large_df %>%
+  group_by(State, Key) %>%
+  summarise(Total_Key_Count = n())
+
+test %>%
+  arrange(`State`) %>%
+  mutate(`State` = factor(`State`, levels = c("Virginia",
+                                              "North Carolina",
+                                              "Kentucky",
+                                              "West Virginia",
+                                              "Tennessee",
+                                              "Georgia",
+                                              "Alabama",
+                                              "Mississippi",
+                                              "Arkansas",
+                                              "Nebraska",
+                                              "Texas",
+                                              "Florida",
+                                              "Indiana",
+                                              "Louisiana")))%>%
+  ggplot(aes(x = State,
+           y = Total_Key_Count,
+           fill = Key)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Key Counts per State",
+       x = "State", 
+       y = "Count") +
+  theme_minimal()+
+  theme(text = element_text(size = 20),
+        plot.title = element_text(hjust = .5),
+        axis.text.x = element_text(angle = 55, 
+                                   margin = margin(r=0), 
+                                   hjust = 1))
+
 #Chi-Squared Independence test----
-test <- sum_counts_per_state %>%
+test2 <- sum_counts_per_state %>%
   filter(Total_Count >= 5)
 
-chisq.test(test)
+chisq.test(test2$Total_Count)
+plot(table(large_df$Count))
+
+tunejenktbl <- table(large_df$Count)
+print(tunejenktbl )
+getJenksBreaks((large_df$Count), 5, subset = NULL)
+getJenksBreaks(large_df$Count, 5)
+?getJenksBreaks
+install.packages('BAMMtools')
+library(BAMMtools)
 
 #zoomed in ----
 
@@ -313,8 +356,8 @@ ggplot() +
                linejoin = "round",
                lineend = "round") +
   geom_point(data = new_df,
-             aes(x = Long, 
-                 y = Lat, 
+             aes(x = Longitude, 
+                 y = Latitude, 
                  color = Count_Bin),
              size = 3,
              position = position_jitter(width = 0.11, height = 0.11)) +
@@ -324,8 +367,8 @@ ggplot() +
   coord_cartesian(xlim = c(-102.3, -74.6), ylim = c(25.5, 42.5))+
   theme(text = element_text(size = 25),
         plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
+  scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
+                                "13-18" = "purple", "19+" = "red"))+
   theme(legend.position = "right",   
         legend.justification = "left")
 
@@ -349,8 +392,8 @@ ggplot() +
                linejoin = "round",
                lineend = "round") +
   geom_point(data = new_df,
-             aes(x = Long, 
-                 y = Lat, 
+             aes(x = Longitude, 
+                 y = Latitude, 
                  color = Count_Bin),
              size = 2,
              position = position_jitter(width = 0.2, height = 0.2)) +
@@ -359,19 +402,19 @@ ggplot() +
   coord_fixed(ratio = 1.3)+
   theme(text = element_text(size = 20),
         plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
+  scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
+                                "13-18" = "purple", "19+" = "red"))+
   theme(legend.position = "right",   
         legend.justification = "left")
 
-#Virginia plot ----
+#USA Other way plot ----
 
-counties_va <- counties[counties$region == "Virginia",  ]
-states_va <- states[states$region == "Virginia", ]
-merged_data_va <- new_df[new_df$State  == "Virginia", ]
+large_df %>%
+  group_by(`Source of Tune` ) %>%
+  summarise(count = n(`Tuning Notes`))
 
 ggplot() +
-  geom_polygon(data = counties_va, 
+  geom_polygon(data = counties, 
                aes(x = long, 
                    y = lat, 
                    group = group),
@@ -379,7 +422,7 @@ ggplot() +
                color = "gray",
                linejoin = "round",
                lineend = "butt") +  
-  geom_polygon(data = states_va, 
+  geom_polygon(data = states, 
                aes(x = long, 
                    y = lat, 
                    group = group),
@@ -387,528 +430,89 @@ ggplot() +
                color = "black",
                linejoin = "round",
                lineend = "round") +
-  geom_point(data = merged_data_va,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-position = position_jitter(width = 0.08, height = 0.08)) +
-  labs(color = "Count") +
+  geom_point(data = large_df,
+             aes(x = LONG_jittered,  
+                 y = LAT_jittered, 
+                 color = `Tuning Notes`),
+             size = 2,
+             position = position_jitter(width = 0.2, height = 0.2)) +
+  labs(color = "Tuning Notes") +
   theme_void() +
   coord_fixed(ratio = 1.3)+
   theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
+        plot.margin = margin(5, 20, 50, 50)) +
+  scale_color_manual(values = c("GDAE" = "blue", "ADAE" = "green", "AEAE" = "red", 
+                                "DDAD" = "purple", "AEAC#" = "orange", "AEAD" =  'grey',
+                                "GDAD" = "cyan", "AEF#C#" = 'yellow', "EDAE" = 'darkgreen'))+
   theme(legend.position = "right",   
         legend.justification = "left")
 
+#FUNCTION State plotting ----
 
-#West Virginia plot ----
+state_plot <- function(temp){
+  
+  counties_v <- counties[counties$region == temp,  ]
+  states_v <- states[states$region == temp, ]
+  merged_data_v <- new_df[new_df$State  == temp, ]
+  
+  ggplot() +
+    geom_polygon(data = counties_v, 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group),
+                 fill = "white", 
+                 color = "gray",
+                 linejoin = "round",
+                 lineend = "butt") +  
+    geom_polygon(data = states_v, 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group),
+                 fill = NA,
+                 color = "black",
+                 linejoin = "round",
+                 lineend = "round") +
+    geom_point(data = merged_data_v,
+               aes(x = Longitude, 
+                   y = Latitude, 
+                   color = Count_Bin),
+               size = 2.5,
+               position = position_jitter(width = 0.08, height = 0.08)) +
+    labs(color = "Count") +
+    theme_void() +
+    coord_fixed(ratio = 1.3)+
+    theme(text = element_text(size = 20),
+          plot.margin = margin(5, 20, 5, 5)) +
+    scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
+                                  "13-18" = "purple", "19+" = "red"))+
+    theme(legend.position = "right",   
+          legend.justification = "left")
+}
 
-counties_wva <- counties[counties$region == "West Virginia", ]
-states_wva <- states[states$region == "West Virginia", ]
-merged_data_wva <- new_df[new_df$State  == "West Virginia",]
-
-ggplot() +
-  geom_polygon(data = counties_wva, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_wva, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_wva,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.08, height = 0.08)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 30),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-
-#North Carolina plot ----
-
-counties_nc <- counties[counties$region == "North Carolina", ]
-states_nc <- states[states$region == "North Carolina", ]
-merged_data_nc <- new_df[new_df$State  == "North Carolina",]
-
-ggplot() +
-  geom_polygon(data = counties_nc, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_nc, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_nc,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.11, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Tennessee plot ----
-
-counties_tn <- counties[counties$region == "Tennessee", ]
-states_tn <- states[states$region == "Tennessee", ]
-merged_data_tn <- new_df[new_df$State  == "Tennessee",]
-
-ggplot() +
-  geom_polygon(data = counties_tn, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_tn, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_tn,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.11, height = 0.095)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Kentucky plot ----
-
-counties_ky <- counties[counties$region == "Kentucky", ]
-states_ky <- states[states$region == "Kentucky", ]
-merged_data_ky <- new_df[new_df$State  == "Kentucky",]
-
-ggplot() +
-  geom_polygon(data = counties_ky, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_ky, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_ky,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.1)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(text = element_text(size = 20),
-        legend.position = "right",   
-        legend.justification = "left")
-
-#Georgia plot ----
-
-counties_ga <- counties[counties$region == "Georgia", ]
-states_ga <- states[states$region == "Georgia", ]
-merged_data_ga <- new_df[new_df$State  == "Georgia",]
-
-ggplot() +
-  geom_polygon(data = counties_ga, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_ga, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_ga,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(text = element_text(size = 20),
-        legend.position = "right",   
-        legend.justification = "left")
-
-#Alabama plot ----
-
-counties_al <- counties[counties$region == "Alabama", ]
-states_al <- states[states$region == "Alabama", ]
-merged_data_al <- new_df[new_df$State  == "Alabama",]
-
-ggplot() +
-  geom_polygon(data = counties_al, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_al, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_al,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(text = element_text(size = 20),
-        legend.position = "right",   
-        legend.justification = "left")
-
-#Mississippi plot ----
-
-counties_ms <- counties[counties$region == "Mississippi", ]
-states_ms <- states[states$region == "Mississippi", ]
-merged_data_ms <- new_df[new_df$State  == "Mississippi",]
-
-ggplot() +
-  geom_polygon(data = counties_ms, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_ms, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_ms,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Texas plot ----
-
-counties_tx <- counties[counties$region == "Texas", ]
-states_tx <- states[states$region == "Texas", ]
-merged_data_tx <- new_df[new_df$State  == "Texas",]
-
-ggplot() +
-  geom_polygon(data = counties_tx, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_tx, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_tx,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
+#PLOTTING States ----  
+state_plot("Virginia")
+state_plot("West Virginia")
+state_plot("North Carolina")
+state_plot("Tennessee")
+state_plot("Kentucky")
+state_plot("Georgia")
+state_plot("Alabama")
+state_plot("Mississippi")
+state_plot("Texas")
+state_plot("Florida")
+state_plot("Louisiana")
+state_plot("Arkansas")
+state_plot("Nebraska")
+state_plot("Indiana")
 
 
-#Florida plot ----
+#Erroneous row ---- skiped
+replacememt_row <- subset(centroids, COUNTYFP == '067' & STATEFP.x == "51") 
 
-counties_fl <- counties[counties$region == "Florida", ]
-states_fl <- states[states$region == "Florida", ]
-merged_data_fl <- new_df[new_df$State  == "Florida",]
+matched_data[matched_data$Name == "N.H. Mills", colnames(centroids)] <- replacememt_row[colnames(centroids)]
 
-ggplot() +
-  geom_polygon(data = counties_fl, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_fl, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_fl,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 25),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Louisiana plot ----
-
-counties_la <- counties[counties$region == "Louisiana", ]
-states_la <- states[states$region == "Louisiana", ]
-merged_data_la <- new_df[new_df$State  == "Louisiana",]
-
-ggplot() +
-  geom_polygon(data = counties_la, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_la, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_la,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Arkansas plot ----
-
-counties_ar <- counties[counties$region == "Arkansas", ]
-states_ar <- states[states$region == "Arkansas", ]
-merged_data_ar <- new_df[new_df$State  == "Arkansas",]
-
-ggplot() +
-  geom_polygon(data = counties_ar, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_ar, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_ar,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 25),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Nebraska plot ----
-
-counties_nb <- counties[counties$region == "Nebraska", ]
-states_nb <- states[states$region == "Nebraska", ]
-merged_data_nb <- new_df[new_df$State  == "Nebraska",]
-
-ggplot() +
-  geom_polygon(data = counties_nb, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_nb, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_nb,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
-
-#Indiana plot ----
-
-counties_in <- counties[counties$region == "Indiana", ]
-states_in <- states[states$region == "Indiana", ]
-merged_data_in <- new_df[new_df$State  == "Indiana",]
-
-ggplot() +
-  geom_polygon(data = counties_in, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = "white", 
-               color = "gray",
-               linejoin = "round",
-               lineend = "butt") +  
-  geom_polygon(data = states_in, 
-               aes(x = long, 
-                   y = lat, 
-                   group = group),
-               fill = NA,
-               color = "black",
-               linejoin = "round",
-               lineend = "round") +
-  geom_point(data = merged_data_in,
-             aes(x = Long, 
-                 y = Lat, 
-                 color = Count_Bin),
-             size = 2.5,
-             position = position_jitter(width = 0.1, height = 0.09)) +
-  labs(color = "Count") +
-  theme_void() +
-  coord_fixed(ratio = 1.3)+
-  theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1" = "blue", "2-5" = "green", "6-10" = "orange", 
-                                "11-14" = "purple", "15+" = "red"))+
-  theme(legend.position = "right",   
-        legend.justification = "left")
+#Extract Lat and Long
+matched_data <- matched_data %>%
+  mutate(coordinates = st_coordinates(geometry)) %>%
+  mutate(Latitude = coordinates[, "Y"],
+         Longitude = coordinates[, "X"])
