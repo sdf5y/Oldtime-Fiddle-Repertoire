@@ -1,4 +1,4 @@
-setwd("C:/Users/18045/Documents/Python/fiddletune")  #R/fiddle
+setwd("C:/Users/18045/Documents/R/fiddle")
 #install.packages("xtable", "dplyr",  "readxl", "gridExtra","xtable", "readr", "car", "maps", "mapdata", "usmap", "sf", "tigris")
 library(readr)
 library(ggplot2)
@@ -69,9 +69,9 @@ big_key <- fiddle_copy %>%
 
 colnames(big_key) <- c("Tuning Notes","Key",  "Other", "Count")
 
-#Plots ----
+#-----Plots ----
 
-#Plots of tuning and key
+#Plots of tuning and key----
 big_tab %>%
   arrange(`Tuning Notes`) %>%
   mutate(`Tuning Notes` = factor(`Tuning Notes`, levels = c("GDAE",
@@ -96,7 +96,7 @@ ggplot(aes(x = `Tuning Notes`,
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45,  margin = margin(r=0)))
 
-#plot of modal and minor tunes 
+#plot of modal and minor tunes----
 big_key %>%
   arrange(`Other`) %>%
   filter(!is.na(`Other`)) %>%
@@ -117,9 +117,7 @@ big_key %>%
         plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle = 45, margin = margin(r=0)))
 
-#plot of crooked tunes 
-
-fiddle_copy$`Crooked [-/+]`
+#Plot of crooked tunes----
 
 fiddle_ink %>%
   arrange(`Tuning Notes`) %>%
@@ -156,7 +154,7 @@ source_2_df <- fiddle_copy %>%
   
 colnames(source_2_df) <- c("Name", "Count")
 
-source_df <-fiddle_copy %>%
+source_df <- fiddle_copy %>%
   group_by(gsub("\\ /.*","", fiddle_copy$`Source of Tune`)) %>%
   count(`Key`)
 
@@ -170,7 +168,7 @@ source_2_df <- source_2_df %>%
 xtable(source_2_df)
 xtable(artist_df[2:5], digits = 0)
 
-#Maps ----
+#-----Maps ----
 
 usa <- map_data("usa")
 
@@ -192,7 +190,7 @@ counties$subregion <- gsub("(^|[[:space:]])([[:alpha:]])", "\\1\\U\\2",
 
 artist_df <- subset(artist_df, `State` != "NA")
 
-#identify unique states, and merge dataframes----
+#Unique states then merge dataframes----
 
 centroids <- tigris::counties(resolution = "20m") %>% 
   st_centroid()
@@ -220,7 +218,7 @@ new_df <- matched_data %>%
 
 colnames(new_df) <- c("County", "State", "Rank", "Name", "Count", "Latitude", "Longitude")
 
-#Final Plots prepwork----
+#Plot prepwork----
 
 list_states_df <- c("New Jersey", "Pennsylvania", "Ohio", 'Indiana', 'Illinois', 'Iowa', 'Missouri', 
                     'Kansas', 'Nebraska', 'Oklahoma', 'Texas', 'Louisiana', 'Mississippi', 'Alabama', 'Georgia', 'Florida', 
@@ -234,9 +232,11 @@ filtered_counties <- counties %>%
   filter(region %in% list_states_df)
 
 count_colors <- c("blue", "green", "red", "purple", "orange")
-new_df$Count_Bin <- cut(new_df$Count, breaks = c(0, 3, 8, 12, 18, Inf), #c(0, 1, 5, 10, 14, Inf)
-                        labels = c("1-3", "4-8", "9-12", "13-18", "19+"), #c("1", "2-5", "6-10", "11-14", "15+")
+new_df$Count_Bin <- cut(new_df$Count, breaks = c(0, 1, 4, 10, 14, Inf),
+                        labels = c("1", "2-3", "4-10", "11-14", "15+"),
                         include.lowest = TRUE)
+
+unique((sort(new_df$Count)))
 
 #Histogram of Tune Counts and States-----
 
@@ -321,22 +321,57 @@ test %>%
                                    margin = margin(r=0), 
                                    hjust = 1))
 
+#Histogram of Tuning counts by State ----
+
+test4 <- large_df %>%
+  group_by(`State`) %>%
+  count(`Tuning Notes`)
+
+test4 %>%
+  arrange(`State`) %>%
+  mutate(`State` = factor(`State`, levels = c("Virginia",
+                                              "North Carolina",
+                                              "Kentucky",
+                                              "West Virginia",
+                                              "Tennessee",
+                                              "Georgia",
+                                              "Alabama",
+                                              "Mississippi",
+                                              "Arkansas",
+                                              "Nebraska",
+                                              "Texas",
+                                              "Florida",
+                                              "Indiana",
+                                              "Louisiana")))%>%
+  ggplot(aes(x = State,
+             y = n,
+             fill = `Tuning Notes`)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Total Tuning Counts per State",
+       x = "State", 
+       y = "Count") +
+  theme_minimal()+
+  labs(color = "Tuning Notes") +
+  scale_color_manual(values = c("GDAE" = "blue", "ADAE" = "green", "AEAE" = "red", 
+                                "DDAD" = "purple", "AEAC#" = "orange", "AEAD" =  'grey',
+                                "GDAD" = "cyan", "AEF#C#" = 'yellow', "EDAE" = 'darkgreen'))+
+  theme(text = element_text(size = 20),
+        plot.title = element_text(hjust = .5),
+        axis.text.x = element_text(angle = 55, 
+                                   margin = margin(r=0), 
+                                   hjust = 1))
+
+
 #Chi-Squared Independence test----
 test2 <- sum_counts_per_state %>%
   filter(Total_Count >= 5)
 
 chisq.test(test2$Total_Count)
-plot(table(large_df$Count))
 
-tunejenktbl <- table(large_df$Count)
-print(tunejenktbl )
-getJenksBreaks((large_df$Count), 5, subset = NULL)
-getJenksBreaks(large_df$Count, 5)
-?getJenksBreaks
-install.packages('BAMMtools')
-library(BAMMtools)
+#Zoomed-in Tune Count ----
 
-#zoomed in ----
+color_scale <- c("1" = "blue", "2-3" = "green", "4-10" = "orange", "11-14" = "purple", "15+" = "red")
+tuning <- c("GDAE", "AEAE", "DDAD", "GDAD", "ADAE", "AEAC#", "AEAD", "EDAE", "AEF#C#")
 
 ggplot() +
   geom_polygon(data = counties, 
@@ -360,19 +395,18 @@ ggplot() +
                  y = Latitude, 
                  color = Count_Bin),
              size = 3,
-             position = position_jitter(width = 0.11, height = 0.11)) +
+             position = position_jitter(width = 0.1, height = 0.1)) +
   labs(color = "Count") +
   theme_void() +
   coord_fixed(ratio = 1.3)+
   coord_cartesian(xlim = c(-102.3, -74.6), ylim = c(25.5, 42.5))+
   theme(text = element_text(size = 25),
         plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
-                                "13-18" = "purple", "19+" = "red"))+
+  scale_color_manual(values = color_scale)+ 
   theme(legend.position = "right",   
         legend.justification = "left")
 
-#USA plot ----
+#USA plot Tune Count ----
 
 ggplot() +
   geom_polygon(data = counties, 
@@ -402,16 +436,55 @@ ggplot() +
   coord_fixed(ratio = 1.3)+
   theme(text = element_text(size = 20),
         plot.margin = margin(5, 20, 5, 5)) +
-  scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
-                                "13-18" = "purple", "19+" = "red"))+
+  scale_color_manual(values = color_scale)+
   theme(legend.position = "right",   
         legend.justification = "left")
 
-#USA Other way plot ----
+#Zoomed-in plot Tuning Count----
 
-large_df %>%
-  group_by(`Source of Tune` ) %>%
-  summarise(count = n(`Tuning Notes`))
+test3 <- large_df %>%
+  group_by(`Tuning Notes`, `LAT_jittered`, `LONG_jittered`) %>%
+  summarise(count = n()) %>%
+  filter(`Tuning Notes` %in% tuning)
+
+ggplot() +
+  geom_polygon(data = counties, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group),
+               fill = "white", 
+               color = "gray",
+               linejoin = "round",
+               lineend = "butt") +  
+  geom_polygon(data = states, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group),
+               fill = NA,
+               color = "black",
+               linejoin = "round",
+               lineend = "round") +
+  geom_point(data = test3,
+             aes(x = LONG_jittered,  
+                 y = LAT_jittered, 
+                 color = `Tuning Notes`,
+                 size = count),
+             alpha = 0.5,
+             position = position_jitter(width = 0.1, height = 0.1)) +
+  labs(color = "Tuning Notes") +
+  theme_void() +
+  coord_fixed(ratio = 1.3)+
+  coord_cartesian(xlim = c(-102.3, -74.6), ylim = c(25.5, 42.5))+
+  theme(text = element_text(size = 20),
+        plot.margin = margin(5, 20, 50, 50)) +
+  scale_color_manual(values = c("GDAE" = "blue", "ADAE" = "green", "AEAE" = "red", 
+                                "DDAD" = "purple", "AEAC#" = "orange", "AEAD" =  'grey',
+                                "GDAD" = "cyan", "AEF#C#" = 'yellow', "EDAE" = 'darkgreen'))+
+  scale_size_continuous(range = c(3, 10)) + 
+  theme(legend.position = "right",   
+        legend.justification = "left")
+
+#USA plot Tuning Count ----
 
 ggplot() +
   geom_polygon(data = counties, 
@@ -447,6 +520,8 @@ ggplot() +
   theme(legend.position = "right",   
         legend.justification = "left")
 
+
+
 #FUNCTION State plotting ----
 
 state_plot <- function(temp){
@@ -477,18 +552,65 @@ state_plot <- function(temp){
                    y = Latitude, 
                    color = Count_Bin),
                size = 2.5,
-               position = position_jitter(width = 0.08, height = 0.08)) +
+               position = position_jitter(width = 0.05, height = 0.05)) +
     labs(color = "Count") +
     theme_void() +
     coord_fixed(ratio = 1.3)+
     theme(text = element_text(size = 20),
           plot.margin = margin(5, 20, 5, 5)) +
-    scale_color_manual(values = c("1-3" = "blue", "4-8" = "green", "9-12" = "orange", #c("1" = "blue", "2-5" = "green", "6-10" = "orange", "11-14" = "purple", "15+" = "red")
-                                  "13-18" = "purple", "19+" = "red"))+
+    scale_color_manual(values = color_scale)+
     theme(legend.position = "right",   
           legend.justification = "left")
 }
 
+state_plot_tuning <- function(temp, temp1){
+  
+  counties_v <- counties[counties$region == temp,  ]
+  states_v <- states[states$region == temp, ]
+  
+  test3 <- large_df %>%
+    filter(`State` == temp) %>%
+    group_by(`Tuning Notes`, `LAT_jittered`, `LONG_jittered`) %>%
+    summarise(count = n()) %>%
+    filter(`Tuning Notes` %in% temp1)
+  
+  ggplot() +
+    geom_polygon(data = counties_v, 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group),
+                 fill = "white", 
+                 color = "gray",
+                 linejoin = "round",
+                 lineend = "butt") +  
+    geom_polygon(data = states_v, 
+                 aes(x = long, 
+                     y = lat, 
+                     group = group),
+                 fill = NA,
+                 color = "black",
+                 linejoin = "round",
+                 lineend = "round") +
+    geom_point(data = test3,
+               aes(x = LONG_jittered,  
+                   y = LAT_jittered, 
+                   color = `Tuning Notes`,
+                   size = count),
+               alpha = 0.5,
+               position = position_jitter(width = 0.1, height = 0.1)) +
+    labs(color = "Tuning Notes") +
+    theme_void() +
+    coord_fixed(ratio = 1.3)+
+    theme(text = element_text(size = 20),
+          plot.margin = margin(5, 20, 50, 50)) +
+    scale_color_manual(values = c("GDAE" = "blue", "ADAE" = "green", "AEAE" = "red", 
+                                  "DDAD" = "purple", "AEAC#" = "orange", "AEAD" =  'grey',
+                                  "GDAD" = "cyan", "AEF#C#" = 'yellow', "EDAE" = 'darkgreen'))+
+    scale_size_continuous(range = c(5, 15)) + 
+    theme(legend.position = "right",   
+          legend.justification = "left")
+}
+  
 #PLOTTING States ----  
 state_plot("Virginia")
 state_plot("West Virginia")
@@ -505,14 +627,17 @@ state_plot("Arkansas")
 state_plot("Nebraska")
 state_plot("Indiana")
 
-
-#Erroneous row ---- skiped
-replacememt_row <- subset(centroids, COUNTYFP == '067' & STATEFP.x == "51") 
-
-matched_data[matched_data$Name == "N.H. Mills", colnames(centroids)] <- replacememt_row[colnames(centroids)]
-
-#Extract Lat and Long
-matched_data <- matched_data %>%
-  mutate(coordinates = st_coordinates(geometry)) %>%
-  mutate(Latitude = coordinates[, "Y"],
-         Longitude = coordinates[, "X"])
+state_plot_tuning("Virginia", tuning) 
+state_plot_tuning("West Virginia", tuning) 
+state_plot_tuning("North Carolina", tuning) 
+state_plot_tuning("Tennessee", tuning) 
+state_plot_tuning("Kentucky", tuning) 
+state_plot_tuning("Georigia", tuning) 
+state_plot_tuning("Alabama", tuning) 
+state_plot_tuning("Mississippi", tuning) 
+state_plot_tuning("Texas", tuning) 
+state_plot_tuning("Florida", tuning) 
+state_plot_tuning("Louisiana", tuning) 
+state_plot_tuning("Arkansas", tuning) 
+state_plot_tuning("Nebraska", tuning) 
+state_plot_tuning("Indiana", tuning) 
