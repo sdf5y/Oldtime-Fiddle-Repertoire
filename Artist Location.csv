@@ -1,111 +1,117 @@
-Rank,Name,Count,County,State
-1,Ed Haley,23,Rowan,Kentucky
-2,Marcus Martin,23,Buncombe,North Carolina
-3,Emmett Lundy,21,Grayson,Virginia
-4,Norman Edmonds,19,Carroll,Virginia
-5,Clayton McMichen,15,Fulton,Georgia
-6,Mark Campbell,14,Chesterfield,Virginia
-7,Cowan Powers,13,Scott,Virginia
-8,Melvin Wine,13,Braxton,West Virginia
-9,Edden Hammons,12,Pocahontas,West Virginia
-10,French Carpenter,12,Clay,West Virginia
-11,Burl Hammons,11,Pocahontas,West Virginia
-12,J.W. Day,11,Rowan,Kentucky
-13,Manco Sneed,11,Cherokee,North Carolina
-14,Henry Reed,10,Giles,Virginia
-15,Tommy Jarrell,10,Surry,North Carolina
-16,John Ashby,8,Fauquier,Virginia
-17,N.H. Mills,8,Franklin,Virginia
-18,Taylor Kimble,8,Carroll,Virginia
-19,Eck Dunford,7,Carroll,Virginia
-20,W.H. Stepp,6,Magoffin,Kentucky
-21,Fulton Myers,5,Carroll,Virginia
-22,G.B. Grayson,5,Johnson,Tennessee
-23,Ben Jarrell,4,Surry,North Carolina
-24,Bill Shelor,4,Patrick,Virginia
-25,Charlie Melvin Stripling,4,Kennedy,Alabama
-26,"J.W. ""Babe"" Spangler",4,Patrick,Virginia
-27,John Dykes,4,Scott,Virginia
-28,John Salyer,4,Magoffin,Kentucky
-29,Leonard Rutherford,4,Wanye,Kentucky
-30,Luther Strong,4,Perry,Kentucky
-31,Posey Rorer,4,Rockingham,North Carolina
-32,Chalie Bowman,3,Washington,Tennessee
-33,Allen Sisson,3,Fannin,Georgia
-34,Armin Barnett,3,Charlottesville,Virginia
-35,Bunt Stephens,3,Moore,Tennessee
-36,Charlie Higgins,3,Grayson,Virginia
-37,Clyde Davenport,3,Wanye,Kentucky
-38,Dr. D.D. Hollis ,3,Lamar,Alabama
-39,Emory Bailey,3,Calhoun,West Virginia
-40,Ernest Stanley,3,Carroll,Virginia
-41,Floyd Ethridge,3,Rutherford,Tennessee
-42,Frank Weems,3,Perry,Tennessee
-43,J.D. Harris,3,Buncombe,North Carolina
-44,Oscar Stone,3,Sumner,Tennessee
-45,Osey Helton,3,Buncombe,North Carolina
-46,Sid Harkreader,3,Wilson,Tennessee
-47,Ambrose Stuart ,2,Hamblen,Tennessee
-48,Frank “Dad” Williams,2,Avery,North Carolina
-49,Estill Bingham,2,Bell,Kentucky
-50,Franklin George,2,Mercer,West Virginia
-51,Fred Cockerham,2,Surry,North Carolina
-52,Howard Wyatt,2,Washington,Virginia
-53,Joe Birchfield,2,Carter,Tennessee
-54,John Carson,2,Fulton,Georgia
-55,"John W. ""Peg"" Hatcher",2,Tishomingo,Mississippi
-56,Pug Allen,2,Augusta,Virginia
-57,Sam Conner,2,Floyd,Virginia
-58,Stuart Lundy,2,Grayson,Virginia
-59,Alva Green,1,Elliott,Kentucky
-60,Andrew Baxter,1,Gordon,Georgia
-61,Bill Helms,1,Upson,Georgia
-62,Bill Hensley,1,Madison,North Carolina
-63,Blaine Smith,1,Hamilton,Tennessee
-64,Bob Walters,1,Burt,Nebraska
-65,Bruce Greene,1,Yancey,North Carolina
-66,Charlie Osborne,1,Russell,Virginia
-67,Clarence Cobb,1,Hopkins,Kentucky
-68,Cush Holden,1,Levy,Florida
-69,Cyrus Futrell,1,Cross,Arkansas
-70,Dewey Hamrick,1,Clay,West Virginia
-71,Dudley Vance ,1,Washington,Tennessee
-72,Earl Johnson,1,Gwinnett,Georgia
-73,Ed Morrison,1,Boyd,Kentucky
-74,Ed Taylor,1,Dickenson,Virginia
-75,Emory Mills,1,Whitley,Kentucky
-76,Ernie Carpenter,1,Braxton,West Virginia
-77,Esker Hutchins,1,Surry,North Carolina
-78,Glen Smith,1,Carroll,Virginia
-79,Grey Craig,1,Henry,Virginia
-80,Guy Brooks,1,Alleghany,North Carolina
-81,Harold Hausenfluck,1,Chesterfield,Virginia
-82,Hick Edmonds,1,Smyth,Virginia
-83,Hiter Colvin,1,Lincoln,Louisiana
-84,"Issac ""Ike"" Reaves",1,White,Arkansas
-85,Ivan Weddle,1,Floyd,Virginia
-86,J.E. Mainer,1,Cabarrus,North Carolina
-87,Jack Pierce,1,Smyth,Virginia
-88,James Brown,1,Muehlenburg,Kentucky
-89,James Chisholm,1,Albermarle,Virginia
-90,James McCarroll,1,Roane,Tennessee
-91,Jesse Shelor,1,Patrick,Virginia
-92,Jim Booker,1,Jessamine,Kentucky
-93,Jimmy Driftwood,1,Washington,Arkansas
-94,John Johnson,1,Braxton,West Virginia
-95,John Lewis,1,Stokes,North Carolina
-96,John Summers,1,Howard,Indiana
-97,Lonnie Corsbie,1,Guliford,North Carolina
-98,Lowe Stokes,1,Fulton,Georgia
-99,Mose Coffman,1,Greenbrier,West Virginia
-100,Oscar Harper,1,Terrell,Texas
-101,Oscar Wright,1,Mercer,West Virginia
-102,"Owen ""Snake"" Chapman",1,Pike,Kentucky
-103,Roy “Speedy” Tolliver,1,Arlington,Virginia
-104,Sam McNeils,1,Floyd,Virginia
-105,Samuel Peacock,1,Navarro,Texas
-106,Ted Gossett,1,Muhlenberg,Kentucky
-107,Theron Hale,1,Davidson,Tennessee
-108,William Thomas Narmour,1,Carroll,Mississippi
-109,Y.Z. “Wyzee” Hamilton,1,Clay,Alabama
-NA,Various,12,Various,Ireland
+Name,County,State
+Allen Sisson,Fannin,Georgia
+Alva Green,Elliott,Kentucky
+Ambrose Stuart ,Hamblen,Tennessee
+Andrew Baxter,Gordon,Georgia
+Armin Barnett,Albemarle ,Virginia
+Ben Jarrell,Surry,North Carolina
+Bill Helms,Upson,Georgia
+Bill Hensley,Madison,North Carolina
+Bill Shelor,Patrick,Virginia
+Billy Altizer,Roanoke,Virginia
+Blaine Smith,Hamilton,Tennessee
+Bob Walters,Burt,Nebraska
+Bruce Greene,Yancey,North Carolina
+Bunt Stephens,Moore,Tennessee
+Burl Hammons,Pocahontas,West Virginia
+Charlie Bowman,Washington,Tennessee
+Charlie Higgins,Grayson,Virginia
+Charlie Melvin Stripling,Lamar,Alabama
+Charlie Osborne,Russell,Virginia
+Clarence Cobb,Hopkins,Kentucky
+Clayton McMichen,Fulton,Georgia
+Clyde Davenport,Wayne,Kentucky
+Coley Jones ,Dallas,Texas
+Cowan Powers,Scott,Virginia
+Cush Holden,Levy,Florida
+Cyrus Futrell,Cross,Arkansas
+Dewey Hamrick,Clay,West Virginia
+Dr. D.D. Hollis ,Lamar,Alabama
+Dudley Vance ,Washington,Tennessee
+Earl Johnson,Gwinnett,Georgia
+Eck Dunford,Carroll,Virginia
+Ed Haley,Rowan,Kentucky
+Ed Morrison,Boyd,Kentucky
+Ed Taylor,Dickenson,Virginia
+Edden Hammons,Pocahontas,West Virginia
+Emmett Lundy,Grayson,Virginia
+Emory Bailey,Calhoun,West Virginia
+Emory Mills,Whitley,Kentucky
+Ernest Stanley,Carroll,Virginia
+Ernie Carpenter,Braxton,West Virginia
+Esker Hutchins,Surry,North Carolina
+Estill Bingham,Bell,Kentucky
+Floyd Ethridge,Rutherford,Tennessee
+"Frank ""Dad"" Williams",Avery,North Carolina
+Frank Weems,Perry,Tennessee
+Franklin George,Mercer,West Virginia
+Fred Cockerham,Surry,North Carolina
+French Carpenter,Clay,West Virginia
+Fulton Myers,Carroll,Virginia
+G.B. Grayson,Johnson,Tennessee
+Glen Smith,Carroll,Virginia
+Grey Craig,Henry,Virginia
+Guy Brooks,Alleghany,North Carolina
+Harold Hausenfluck,Chesterfield,Virginia
+Henry Reed,Giles,Virginia
+Hick Edmonds,Smyth,Virginia
+Hiter Colvin,Lincoln,Louisiana
+Howard Wyatt,Washington,Virginia
+"Issac ""Ike"" Reaves",White,Arkansas
+Ivan Weddle,Floyd,Virginia
+J.D. Harris,Buncombe,North Carolina
+J.E. Mainer,Cabarrus,North Carolina
+"J.W. ""Babe"" Spangler",Patrick,Virginia
+J.W. Day,Rowan,Kentucky
+Jack Pierce,Smyth,Virginia
+James Brown,Muhlenberg,Kentucky
+James Chisholm,Albemarle ,Virginia
+James Hammons,Pocahontas,West Virginia
+James McCarroll,Roane,Tennessee
+Jesse Shelor,Patrick,Virginia
+Jim Booker,Jessamine,Kentucky
+Jimmy Driftwood,Washington,Arkansas
+Joe Birchfield,Carter,Tennessee
+John Ashby,Fauquier,Virginia
+John Carson,Fulton,Georgia
+John Dykes,Scott,Virginia
+John Johnson,Braxton,West Virginia
+John Lewis,Stokes,North Carolina
+John Salyer,Magoffin,Kentucky
+John Summers,Howard,Indiana
+"John W. ""Peg"" Hatcher",Tishomingo,Mississippi
+Leonard Rutherford,Wayne,Kentucky
+Lonnie Corsbie,Guilford,North Carolina
+Lowe Stokes,Fulton,Georgia
+Luther Strong,Perry,Kentucky
+Manco Sneed,Cherokee,North Carolina
+Marcus Martin,Buncombe,North Carolina
+Mark Campbell,Chesterfield,Virginia
+Melvin Wine,Braxton,West Virginia
+Mose Coffman,Greenbrier,West Virginia
+N.H. Mills,Franklin,Virginia
+Norman Edmonds,Carroll,Virginia
+Oscar Harper,Terrell,Texas
+Oscar Stone,Sumner,Tennessee
+Oscar Wright,Mercer,West Virginia
+Osey Helton,Buncombe,North Carolina
+"Owen ""Snake"" Chapman",Pike,Kentucky
+Posey Rorer,Rockingham,North Carolina
+Pug Allen,Augusta,Virginia
+Roy “Speedy” Tolliver,Arlington,Virginia
+Sam Conner,Floyd,Virginia
+Sam McNeils,Floyd,Virginia
+Samuel Peacock,Navarro,Texas
+Samuel Warren Caplinger,Wood,West Virginia
+Sid Harkreader,Wilson,Tennessee
+Stuart Lundy,Grayson,Virginia
+Taylor Kimble,Carroll,Virginia
+Ted Gossett,Muhlenberg,Kentucky
+Theron Hale,Davidson,Tennessee
+Tommy Jarrell,Surry,North Carolina
+Various,Various,Ireland
+W.H. Stepp,Magoffin,Kentucky
+William Gilmer,Leake,Mississippi
+William Thomas Narmour,Carroll,Mississippi
+Y.Z. “Wyzee” Hamilton,Clay,Alabama
+Warner Carver,Barren,Kentucky
