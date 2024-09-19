@@ -434,10 +434,11 @@ artist_n <- ggplot() +
   labs(color = "Count",
        title = "Tune Counts By County") +
   theme_void() +
-  coord_fixed(ratio = 1.3)+
+  #coord_map(projection = "albers",  lat0 = 25,  lat1 = 42, xlim = c(-102.3, -74.6),  ylim = c(25.5, 42.5),   clip = "on")+
+  #coord_fixed(ratio = 1.3)+
   #coord_cartesian(xlim = c(-102.3, -74.6), ylim = c(25.5, 42.5))+ #comment out for full view
   theme(text = element_text(size = 20),
-        plot.margin = margin(5, 20, 5, 5)) +
+        plot.margin = margin(5, 20, 50, 50)) +
   scale_color_manual(values = color_scale)+
   theme(legend.position = "right",   
         legend.justification = "left")
@@ -478,7 +479,7 @@ tuning_n <- ggplot() +
                ),
              alpha = 0.5,
              position = position_jitter(width = 0.1, height = 0.1)) +
-  labs(color = "Tuning Notes",
+  labs(color = "Tuning",
        title = "Tuning Distribution By County") +
   theme_void() +
   coord_fixed(ratio = 1.3)+
@@ -620,8 +621,33 @@ state_plot_tuning("Nebraska", tuning)
 state_plot_tuning("Indiana", tuning) 
 
 #PLOTLY of some map -----
+artist_n_plotly <- ggplotly(artist_n, tooltip = "text") %>%
+  layout(
+    geo = list(
+      scope = 'usa',
+      projection = list(type = 'albers usa'),
+      #lonaxis = list(range = c(-102.3, -74.6)), # Set longitude limits
+      #lataxis = list(range = c(25.5, 42.5)),    # Set latitude limits
+      showland = TRUE,
+      landcolor = "white",
+      subunitcolor = "gray",
+      countrycolor = "black"
+    )
+  )
 
-artist_n_plotly <- ggplotly(artist_n, tooltip = "text") 
-tuning_n_plotly <- ggplotly(tuning_n, tooltip = "text")  
+artist_n_plotly
+tuning_n_plotly <- ggplotly(tuning_n, tooltip = "text")  %>%
+  layout(
+    geo = list(
+      scope = 'usa',
+      projection = list(type = 'albers usa'),
+      #lonaxis = list(range = c(-102.3, -74.6)), 
+      #lataxis = list(range = c(25.5, 42.5)),    
+      showland = TRUE,
+      landcolor = "white",
+      subunitcolor = "gray",
+      countrycolor = "black"
+    )
+  )
 
 #write.csv(final_df, file = "final_df.csv")
