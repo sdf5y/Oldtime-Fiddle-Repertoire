@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Dec 25 16:02:20 2023
-@author: 18045
+@author: Sean Franco
 """
 #%%
 import numpy as np
@@ -14,7 +14,7 @@ import os
 import scipy.stats
 
 #%%
-os.chdir("C:\\Users\\18045\\Documents\\Python\\fiddletune")
+os.chdir("")
 fiddle_df = pd.read_excel("Collection of Fiddle Tunes.xlsx") 
 artist_df = pd.read_csv("artistlocation.csv") 
 
