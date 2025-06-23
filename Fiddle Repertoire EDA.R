@@ -1,4 +1,4 @@
-setwd("C:/Users/18045/Documents/R/fiddle")
+setwd("")
 #install.packages("xtable", "dplyr",  "readxl", "gridExtra","xtable", "readr", "car", "maps", "mapdata", "usmap", "sf", "tigris")
 library(readr)
 library(ggplot2)
